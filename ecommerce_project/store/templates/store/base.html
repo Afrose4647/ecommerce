@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Madz Thriftz{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">Madz Thriftz</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+
+            <!-- Left Menu -->
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'home' %}">
+                        <i class="bi bi-house-door"></i> Home  
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'product' %}">
+                        <i class="bi bi-bag"></i> Products  
+                    </a>
+                </li>
+                <li class="nav-item">
+                        <a class="nav-link" href="{% url 'cart' %}">
+                            <i class="bi bi-cart"></i> Cart
+                            {% if cart_count %}
+                            <span class="badge bg-danger">{{ cart_count }}</span>
+                            {% endif %}
+                        </a>
+                </li>
+                    
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'checkout' %}">Checkout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'my_orders' %}">Orders</a>
+                </li>
+            </ul>
+            <!-- Auth Links -->
+         <ul class="navbar-nav">
+            {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-info">Hello, {{ user.username }}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link btn btn-info" href="{% url 'logout' %}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item">
+                    <a class="nav-link btn btn-info" href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="bi bi-person"></i>Login</a>
+                </li>
+            {% endif %}
+        </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Messages -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show mt-3 mx-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+<!-- Login Modal -->
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="loginModalLabel">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success w-100">Login</button>
+        </div>
+        <p class="text-center pb-3">Don't have an account? 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#registerModal" data-bs-dismiss="modal">Register</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Register Modal -->
+<div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{% url 'register' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="registerModalLabel">Register</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="confirm_password" class="form-control" required>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100">Register</button>
+        </div>
+        <p class="text-center pb-3">Already have an account? 
+            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" data-bs-dismiss="modal">Login</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Content -->
+{% block content %}
+{% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

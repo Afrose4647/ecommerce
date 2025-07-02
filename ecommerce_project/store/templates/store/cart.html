@@ -1,0 +1,96 @@
+{% extends 'store/base.html' %}
+{% block content %}
+
+<style>
+    .cart-container {
+        border: 2px solid black;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .cart-container,.cart-summary:hover{
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+    .cart-item {
+        border-bottom: 1px solid #ccc;
+        padding: 15px 0;
+    }
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+    .img-container img {
+        width: 80px;
+    }
+    .cart-summary {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+    .cart-summary h3 {
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+    }
+    .price-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container my-5">
+    <h1 class="text-center mb-4">Your Cart</h1>
+    <div class="row">
+        
+        <!-- Cart Items Section -->
+        <div class="col-md-8 cart-container">
+            {% if cart_items %}
+                {% for item in cart_items %}
+                <div class="row cart-item align-items-center">
+                    <div class="col-3 img-container">
+                        <img class="img-fluid rounded" src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    </div>
+                    <div class="col-9">
+                        <h5>{{ item.product.name }}</h5>
+                        <p>Price: ₹{{ item.product.price }}</p>
+                        <p>Quantity: {{ item.quantity }}</p>
+                        <p><strong>Total: ₹{{ item.total_price }}</strong></p>
+                        <a class="btn btn-sm btn-danger" href="{% url 'remove_from_cart' item.id %}">Remove</a>
+                    </div>
+                </div>
+                {% endfor %}
+                <hr>
+                <h4 class="text-end">Cart Total: ₹{{ total }}</h4>
+            {% else %}
+                <p class="text-center">Your cart is empty.</p>
+            {% endif %}
+        </div>
+
+        <!-- Cart Summary Section -->
+        <div class="col-md-4">
+            <div class="cart-summary">
+                <h3>Summary</h3>
+                <div class="price-label">
+                    <span>Sub-Total</span>
+                    <span>₹{{ total }}</span>
+                </div>
+                <div class="price-label">
+                    <span>Delivery</span>
+                    <span>₹40</span>
+                </div>
+                <hr>
+                <div class="price-label">
+                    <strong>Grand Total</strong>
+                    <strong>₹{{ total|add:40 }}</strong>
+                </div>
+                <div class="d-grid mt-4">
+                    <a class="btn btn-success" href="{% url 'checkout' %}">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+      
+{% endblock %}
